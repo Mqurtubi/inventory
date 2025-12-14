@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id String @id @default(cuid())
+  name String
+  email String @unique
+  passwordHash String
+  role Role @default(STAFF)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stock_movement StockMovement[]
+  sales Sale[]
+
+  @@map("users")
+}
+
+model Product {
+  sku String? @unique
+  name String
+  description String?
+  price Int
+  isActive Boolean @default(true)
+  currentStock Int @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id String @id @default(cuid())
+
+  stock_movement StockMovement[]
+  sale_item SaleItem[]
+
+  @@map("products")
+}
+
+model StockMovement {
+  id String @id @default(cuid())
+  type Type
+  qty Int
+  note String?
+  productId String
+  userId String
+  createdAt DateTime @default(now())
+
+  product Product @relation(fields:[productId], references:[id])
+  user User @relation(fields:[userId], references:[id])
+
+  @@index([productId])
+  @@index([userId])
+  @@index([createdAt])
+
+  @@map("stock_movements")
+}
+
+model Sale {
+  id String @id @default(cuid())
+  code String @unique
+  customer String?
+  total Int @default(0)
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields:[userId],references:[id])
+  items SaleItem[]
+
+  @@index([userId])
+  @@index([createdAt])
+
+  @@map("sales")
+}
+
+model SaleItem{
+  id String @id @default(cuid())
+  saleId String
+  productId String
+  qty Int
+  price Int
+
+  sale Sale @relation(fields:[saleId],references:[id])
+  product Product @relation(fields:[productId],references:[id])
+
+  @@index([saleId])
+  @@index([productId])
+  @@unique([saleId,productId])
+
+  @@map("sale_items")
+}
+
+enum Role{
+  ADMIN
+  STAFF
+  VIEWER
+}
+
+enum Type{
+  IN
+  OUT
+  ADJUST
+}
