@@ -1,6 +1,5 @@
 import type { Response, Request, NextFunction } from "express";
 import { productService } from "../services/product.service.js";
-import { ApiError } from "../utils/ApiError.js";
 import { buildQueryOptions } from "../utils/buildQueryOptions.js";
 import { productQuerySchema } from "../validations/product.validation.js";
 
