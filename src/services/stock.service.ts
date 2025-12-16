@@ -1,13 +1,15 @@
 import { Type } from "../../generated/prisma/enums.js";
 import { prisma } from "../config/prisma.js";
 import { ApiError } from "../utils/ApiError.js";
-
 export const stockService = {
   async get() {
-    const data = await prisma.stockMovement.findMany();
+    const data = await prisma.stockMovement.findMany({orderBy:{createdAt:"desc"}});
     return data;
   },
-  async stockIn(productId: string, qty: number, userId: string) {
+  async stockIn(productId: string, qty: number, userId: string, note?:string) {
+    if(qty <= 0){
+        throw new ApiError(400,"Quantity must be greater than 0")
+    }
     return prisma.$transaction(async (tx) => {
       await tx.stockMovement.create({
         data: {
@@ -15,6 +17,7 @@ export const stockService = {
           userId: userId,
           type: Type.IN,
           qty: qty,
+          ...(note && {note})
         },
       }),
         await tx.product.update({
@@ -25,23 +28,27 @@ export const stockService = {
         });
     });
   },
-  async stockOut(productId: string, qty: number, userId: string) {
-    const findProduct = await prisma.product.findUnique({
-      where: { id: productId },
-    });
-    if (!findProduct || !findProduct.isActive) {
-      throw new ApiError(404, "Product Inactive");
-    }
-    if (findProduct.currentStock < qty) {
-      throw new ApiError(400, "Stock not enough");
+  async stockOut(productId: string, qty: number, userId: string, note?:string) {
+    if(qty<0){
+        throw new ApiError(400,"Quantity must be greater than 0")
     }
     return prisma.$transaction(async (tx) => {
+        const findProduct = await prisma.product.findUnique({
+            where: { id: productId },
+        });
+        if (!findProduct || !findProduct.isActive) {
+            throw new ApiError(404, "Product Inactive");
+        }
+        if (findProduct.currentStock < qty) {
+            throw new ApiError(400, "Stock not enough");
+        }
       await tx.stockMovement.create({
         data: {
           productId: productId,
           userId: userId,
           type: Type.OUT,
           qty: qty,
+          ...(note && {note})
         },
       });
       await tx.product.update({
