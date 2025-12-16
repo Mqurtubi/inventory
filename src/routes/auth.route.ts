@@ -7,4 +7,5 @@ const router = Router();
 
 router.post("/register", validateForm(registerSchema), register);
 router.post("/login", validateForm(loginSchema), login);
+
 export default router;

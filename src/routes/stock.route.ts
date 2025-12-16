@@ -1,7 +1,16 @@
 import { Router } from "express";
-import { stockInProduct } from "../controllers/stock.controller.js";
-const router =Router()
+import {
+  getStockMovement,
+  stockInProduct,
+  stockOutProduct,
+} from "../controllers/stock.controller.js";
+import { auth } from "../middlewares/auth.middleware.js";
+const router = Router();
 
-router.post("/in",stockInProduct)
+router.use(auth);
 
-export default router
+router.get("/", getStockMovement);
+router.post("/in", stockInProduct);
+router.post("/out", stockOutProduct);
+
+export default router;

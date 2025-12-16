@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { validateForm } from "../middlewares/validate.middleware.js";
+import { validateForm, authorize, auth } from "../middlewares/index.js";
 import {
   archiveProduct,
   createProduct,
@@ -11,13 +11,26 @@ import {
   createQuerySchema,
   updateQuerySchema,
 } from "../validations/product.validation.js";
+import { Role } from "../../generated/prisma/enums.js";
 
 const router = Router();
 
 router.get("/", getProducts);
-router.post("/", validateForm(createQuerySchema), createProduct);
-router.put("/:id", validateForm(updateQuerySchema), updateProduct);
-router.put("/:id/archive", archiveProduct);
-router.put("/:id/restore", restoreProduct);
+router.post(
+  "/",
+  auth,
+  authorize(Role.ADMIN),
+  validateForm(createQuerySchema),
+  createProduct
+);
+router.put(
+  "/:id",
+  auth,
+  authorize(Role.ADMIN),
+  validateForm(updateQuerySchema),
+  updateProduct
+);
+router.put("/:id/archive", auth, authorize(Role.ADMIN), archiveProduct);
+router.put("/:id/restore", auth, authorize(Role.ADMIN), restoreProduct);
 
 export default router;
