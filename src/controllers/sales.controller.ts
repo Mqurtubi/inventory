@@ -17,6 +17,19 @@ const getDataSales = async (
   }
 };
 
+const getDataSale = async (req:Request, res:Response, next:NextFunction)=>{
+    try {
+        const id = req.params.id!
+        const sale = await salesProduct.getSale(id)
+        res.status(200).json({
+            message:"success get sale data",
+            data:sale
+        })
+    } catch (error) {
+        next(error)
+    }
+}
+
 const createDataSales = async (
   req: Request,
   res: Response,
@@ -35,4 +48,4 @@ const createDataSales = async (
   }
 };
 
-export { getDataSales, createDataSales };
+export { getDataSales, getDataSale, createDataSales };

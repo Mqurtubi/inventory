@@ -14,23 +14,22 @@ import {
 import { Role } from "../../generated/prisma/enums.js";
 
 const router = Router();
+router.use(auth)
 
-router.get("/", getProducts);
+router.get("/", authorize(Role.ADMIN, Role.STAFF, Role.VIEWER), getProducts);
 router.post(
   "/",
-  auth,
   authorize(Role.ADMIN),
   validateForm(createQuerySchema),
   createProduct
 );
 router.put(
   "/:id",
-  auth,
   authorize(Role.ADMIN),
   validateForm(updateQuerySchema),
   updateProduct
 );
-router.put("/:id/archive", auth, authorize(Role.ADMIN), archiveProduct);
-router.put("/:id/restore", auth, authorize(Role.ADMIN), restoreProduct);
+router.put("/:id/archive", authorize(Role.ADMIN), archiveProduct);
+router.put("/:id/restore", authorize(Role.ADMIN), restoreProduct);
 
 export default router;

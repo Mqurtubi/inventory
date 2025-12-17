@@ -3,6 +3,7 @@ import { prisma } from "../config/prisma.js";
 import { ApiError } from "../utils/ApiError.js";
 import type { Register, Login } from "../types/auth.type.js";
 import { signJwt } from "../utils/jwt.js";
+import { Role } from "../../generated/prisma/enums.js";
 
 export const authService = {
   async register(data: Register) {
@@ -38,4 +39,14 @@ export const authService = {
     const token = signJwt(user);
     return { user, token };
   },
+  async update(id:string,requestRole:Role,newRole:Role){
+    if(requestRole !== Role.ADMIN){
+      throw new ApiError(403,"forbidden")
+    }
+    const user = await prisma.user.findUnique({where:{id:id}})
+    if(!user){
+      throw new ApiError(404,"user not found")
+    }
+    return prisma.user.update({where:{id},data:{role:newRole}})
+  }
 };

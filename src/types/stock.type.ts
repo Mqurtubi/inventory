@@ -8,4 +8,5 @@ interface StockData{
 interface Data{
     data:StockData
 }
+
 export type {Data}
