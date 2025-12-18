@@ -1,19 +1,20 @@
 import type { Response, Request, NextFunction } from "express";
 import { ApiError } from "../utils/ApiError.js";
 import { verifyJwt } from "../utils/jwt.js";
+import type { JwtPayload } from "../types/auth.type.js";
 
 export const auth = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const header = req.headers.authorization;
-    if (!header || !header.startsWith("Bearer ")) {
-      throw new ApiError(401, "unauthorized");
-    }
-    const token = header.split(" ")[1];
-    const payload = verifyJwt(token!);
+ const token = req.cookies?.access_token;
 
-    req.user = payload as any;
+  if (!token) {
+    return next(new ApiError(401, "Unauthenticated"));
+  }
+
+  try {
+    const payload = verifyJwt(token);
+    req.user = payload as JwtPayload;
     next();
-  } catch (error) {
-    throw new ApiError(401, "token invalid");
+  } catch {
+    next(new ApiError(401, "Invalid token"));
   }
 };

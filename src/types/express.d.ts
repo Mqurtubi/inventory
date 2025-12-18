@@ -1,4 +1,4 @@
-import type { User } from "../../generated/prisma/client.ts";
+import { JwtPayload } from "./auth.type.ts"
 
 declare global{
     namespace Express{

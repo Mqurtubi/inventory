@@ -6,6 +6,7 @@ import productRouter from "./routes/product.route.js";
 import stockRouter from "./routes/stock.route.js";
 import salesRouter from "./routes/sales.route.js";
 import cors from "cors"
+import cookieParser from "cookie-parser"
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cors({
 
 app.use(express.json());
 app.use(logger);
+app.use(cookieParser())
 
 app.use("/auth", authRouter);
 app.use("/product", productRouter);

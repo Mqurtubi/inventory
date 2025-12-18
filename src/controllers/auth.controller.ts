@@ -23,10 +23,27 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
+     return res.json({
+      message: "Login success",
+      data: loginUser
+    })
   } catch (error) {
     next(error);
   }
+  
 };
+
+const me = async (req:Request,res:Response,next:NextFunction)=>{
+  try {
+    const userId= req.user.id
+    const user=await authService.me(userId)
+    res.json({
+      data:user
+    })
+  } catch (error) {
+    next(error)
+  }
+}
 
 const updateRole = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -43,4 +60,4 @@ const updateRole = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-export { register, login, updateRole };
+export { register, login, updateRole,me };
