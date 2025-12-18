@@ -1,5 +1,6 @@
 import type { Response, Request, NextFunction } from "express";
 import { authService } from "../services/auth.service.js";
+import { signJwt } from "../utils/jwt.js";
 
 const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -16,28 +17,30 @@ const register = async (req: Request, res: Response, next: NextFunction) => {
 const login = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const loginUser = await authService.login(req.body);
-    res.status(201).json({
-      message: "Login success",
-      data: loginUser,
+    const token = signJwt(loginUser);
+    res.cookie("access_token", token, {
+      httpOnly: true,
+      sameSite: "strict",
+      maxAge: 24 * 60 * 60 * 1000,
     });
   } catch (error) {
     next(error);
   }
 };
 
-const updateRole = async (req:Request, res:Response, next:NextFunction)=>{
+const updateRole = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const {id} = req.params
-    const {role} = req.body
-    console.log(req.user?.role)
+    const { id } = req.params;
+    const { role } = req.body;
+    console.log(req.user?.role);
 
-    const updateUser = await authService.update(id!,req.user?.role!,role)
+    const updateUser = await authService.update(id!, req.user?.role!, role);
     res.json({
       message: "Role updated successfully",
-      data:updateUser
-    })
+      data: updateUser,
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 export { register, login, updateRole };

@@ -14,7 +14,7 @@ import {
 import { Role } from "../../generated/prisma/enums.js";
 
 const router = Router();
-router.use(auth)
+router.use(auth);
 
 router.get("/", authorize(Role.ADMIN, Role.STAFF, Role.VIEWER), getProducts);
 router.post(

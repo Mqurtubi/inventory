@@ -32,21 +32,23 @@ export const authService = {
     if (!user) {
       throw new ApiError(400, "Email or password wrong");
     }
-    const hashPassword = bcrypt.compare(data.passwordHash, user.passwordHash);
+    const hashPassword = await bcrypt.compare(
+      data.passwordHash,
+      user.passwordHash
+    );
     if (!hashPassword) {
       throw new ApiError(400, "Email or password wrong");
     }
-    const token = signJwt(user);
-    return { user, token };
+    return user;
   },
-  async update(id:string,requestRole:Role,newRole:Role){
-    if(requestRole !== Role.ADMIN){
-      throw new ApiError(403,"forbidden")
+  async update(id: string, requestRole: Role, newRole: Role) {
+    if (requestRole !== Role.ADMIN) {
+      throw new ApiError(403, "forbidden");
     }
-    const user = await prisma.user.findUnique({where:{id:id}})
-    if(!user){
-      throw new ApiError(404,"user not found")
+    const user = await prisma.user.findUnique({ where: { id: id } });
+    if (!user) {
+      throw new ApiError(404, "user not found");
     }
-    return prisma.user.update({where:{id},data:{role:newRole}})
-  }
+    return prisma.user.update({ where: { id }, data: { role: newRole } });
+  },
 };

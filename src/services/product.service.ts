@@ -22,7 +22,7 @@ export const productService = {
       sortBy: Object.keys(orderBy)[0],
       orderBy: Object.values(orderBy)[0],
       total,
-      totalPages: total / limit,
+      totalPages: Math.ceil(total / limit),
       data,
     };
   },
