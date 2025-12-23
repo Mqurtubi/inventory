@@ -10,7 +10,7 @@ const validateForm =
       if (error instanceof ZodError) {
         return res.status(400).json({
           message: "validation errors",
-          errora: error.issues,
+          errors: error.issues,
         });
       }
       next(error);
