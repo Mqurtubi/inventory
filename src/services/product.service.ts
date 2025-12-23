@@ -27,7 +27,8 @@ export const productService = {
     };
   },
   async create(data: DataPostProduct) {
-    const product = await prisma.product.create({
+    const product = await prisma.$transaction(async(tx)=>{
+    const created = await prisma.product.create({
       data: {
         name: data.name,
         description: data.description,
@@ -35,12 +36,13 @@ export const productService = {
         currentStock: data.currentStock,
       },
     });
-    const sku = generateSKU(product.id);
-    await prisma.product.update({
-      where: { id: product.id },
-      data: { sku },
-    });
-    return sku;
+    const sku = generateSKU(created.id);
+    return tx.product.update({
+      where:{id:created.id},
+      data:{sku}
+    })
+    })
+    return product
   },
   async update(id: string, data: DataPostProduct) {
     const findProduct = await prisma.product.findUnique({ where: { id: id } });
