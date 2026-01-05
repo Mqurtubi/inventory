@@ -14,7 +14,7 @@ const productQuerySchema = z.object({
     .optional()
     .default(10),
   search: z.string().optional(),
-  isActive: z.boolean().optional(),
+  isActive: z.enum(["true", "false"]).optional(),
   sortBy: z
     .enum(["name", "createdAt", "updatedAt", "isActive"])
     .optional()

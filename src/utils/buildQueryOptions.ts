@@ -8,13 +8,14 @@ export const buildQueryOptions = (query: Query) => {
   const skip = (page - 1) * limit;
 
   const search = query.search?.toString().trim();
-  const isActive = query.isActive;
+  const rawIsActive = query.isActive;
   const where: Prisma.ProductWhereInput = {};
-
+  const isActive =
+    rawIsActive === "true" ? true : rawIsActive === "false" ? false : undefined;
   if (search) {
     where.OR = [{ name: { contains: search } }];
   }
-  if (isActive) {
+  if (typeof isActive === "boolean") {
     where.isActive = isActive;
   }
 
