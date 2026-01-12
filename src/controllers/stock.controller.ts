@@ -23,10 +23,10 @@ const stockInProduct = async (
   next: NextFunction
 ) => {
   try {
-    const { productId, qty } = req.body;
+    const { productId, qty, note } = req.body;
     const userId = req.user?.id;
 
-    const stockIn = await stockService.stockIn(productId, qty, userId!);
+    const stockIn = await stockService.stockIn(productId, qty, userId!, note);
     res.status(200).json({
       message: "stock in success",
       data: stockIn,
@@ -42,10 +42,10 @@ const stockOutProduct = async (
   next: NextFunction
 ) => {
   try {
-    const { productId, qty } = req.body;
+    const { productId, qty, note } = req.body;
     const userId = req.user?.id;
 
-    const stockOut = await stockService.stockOut(productId, qty, userId!);
+    const stockOut = await stockService.stockOut(productId, qty, userId!, note);
     res.status(200).json({
       message: "stock out success",
       data: stockOut,
@@ -55,4 +55,32 @@ const stockOutProduct = async (
   }
 };
 
-export { stockInProduct, getStockMovement, stockOutProduct };
+const stockAdjustProduct = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { productId, qty, note } = req.body;
+    const userId = req.user?.id;
+    const stockAdjust = await stockService.adjustStock(
+      productId,
+      qty,
+      userId!,
+      note
+    );
+    res.status(200).json({
+      message: "stock adjust success",
+      data: stockAdjust,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export {
+  stockInProduct,
+  getStockMovement,
+  stockOutProduct,
+  stockAdjustProduct,
+};
