@@ -23,27 +23,26 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000,
     });
-     return res.json({
+    return res.json({
       message: "Login success",
-      data: loginUser
-    })
+      data: loginUser,
+    });
   } catch (error) {
     next(error);
   }
-  
 };
 
-const me = async (req:Request,res:Response,next:NextFunction)=>{
+const me = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const userId= req.user.id
-    const user=await authService.me(userId)
+    const userId = req.user.id;
+    const user = await authService.me(userId);
     res.json({
-      data:user
-    })
+      data: user,
+    });
   } catch (error) {
-    next(error)
+    next(error);
   }
-}
+};
 
 const updateRole = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -60,4 +59,12 @@ const updateRole = async (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 };
-export { register, login, updateRole,me };
+
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+  res.clearCookie("access_token", {
+    httpOnly: true,
+    sameSite: "strict",
+  });
+  res.json({ message: "Logged out" });
+};
+export { register, login, updateRole, me, logout };
