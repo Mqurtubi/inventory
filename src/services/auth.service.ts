@@ -4,7 +4,6 @@ import { ApiError } from "../utils/ApiError.js";
 import type { Register, Login } from "../types/auth.type.js";
 import { signJwt } from "../utils/jwt.js";
 import { Role } from "../../generated/prisma/enums.js";
-import { use } from "react";
 
 export const authService = {
   async register(data: Register) {
@@ -35,7 +34,7 @@ export const authService = {
     }
     const hashPassword = await bcrypt.compare(
       data.passwordHash,
-      user.passwordHash
+      user.passwordHash,
     );
     if (!hashPassword) {
       throw new ApiError(400, "Email or password wrong");
@@ -52,16 +51,19 @@ export const authService = {
     }
     return prisma.user.update({ where: { id }, data: { role: newRole } });
   },
-  async me(userId:string){
-    const user = await prisma.user.findUnique({where:{id:userId}, select:{
-      id:true,
-      name:true,
-      email:true,
-      role:true
-    }})
-    if(!user){
-      throw new ApiError(404,"user not found")
+  async me(userId: string) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+      },
+    });
+    if (!user) {
+      throw new ApiError(404, "user not found");
     }
-    return user
-  }
+    return user;
+  },
 };

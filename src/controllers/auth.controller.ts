@@ -25,7 +25,7 @@ const login = async (req: Request, res: Response, next: NextFunction) => {
     });
     return res.json({
       message: "Login success",
-      data: loginUser,
+      data: { loginUser },
     });
   } catch (error) {
     next(error);

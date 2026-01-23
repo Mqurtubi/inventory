@@ -1,6 +1,8 @@
-interface SalesItem{
-    productId:string,
-    qty:number
+interface SalesItem {
+  productId: string;
+  qty: number;
 }
-
-export type {SalesItem}
+interface SalesQuery {
+  search?: string | undefined;
+}
+export type { SalesItem, SalesQuery };

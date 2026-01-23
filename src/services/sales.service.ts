@@ -4,9 +4,28 @@ import type { SalesItem } from "../types/sales.type.js";
 import { Type } from "../../generated/prisma/enums.js";
 
 export const salesProduct = {
-  async getSales() {
-    const data = await prisma.sale.findMany({ orderBy: { createdAt: "desc" } });
-    return data;
+  async getSales(search?: string) {
+    const where = search
+      ? {
+          OR: [
+            {
+              customer: {
+                contains: search,
+              },
+            },
+            {
+              code: {
+                contains: search,
+              },
+            },
+          ],
+        }
+      : {};
+
+    return prisma.sale.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+    });
   },
   async getSale(id: string) {
     const data = await prisma.sale.findUnique({
